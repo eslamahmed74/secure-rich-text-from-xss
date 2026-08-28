@@ -1,10 +1,13 @@
 import { useState, type FormEvent } from "react";
+import DOMPurify from "dompurify";
 import "./App.css";
 
 function App() {
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
+
+  const sanitizedMessage = DOMPurify.sanitize(message);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -67,6 +70,44 @@ function App() {
         <p>
           <strong>Message:</strong> {message || "Nothing entered yet"}
         </p>
+      </section>
+
+      <section
+        className="protected-preview"
+        role="region"
+        aria-labelledby="protected-html-heading"
+      >
+        <h2 id="protected-html-heading">Protected HTML </h2>
+        <div
+          className="protected-output"
+          dangerouslySetInnerHTML={{ __html: sanitizedMessage }}
+        />
+      </section>
+
+      <section
+        className="safe-preview"
+        role="region"
+        aria-labelledby="safe-html-heading"
+      >
+        <h2 id="safe-html-heading">Safe React</h2>
+
+        <div className="safe-output">{message}</div>
+      </section>
+
+      <section
+        className="vulnerable-preview"
+        role="region"
+        aria-labelledby="vulnerable-html-heading"
+      >
+        <h2 id="vulnerable-html-heading">Vulnerable HTML</h2>
+        {submitted ? (
+          <div
+            className="vulnerable-output"
+            dangerouslySetInnerHTML={{ __html: message }}
+          />
+        ) : (
+          <p>Submit the form to run the local demo.</p>
+        )}
       </section>
     </main>
   );
